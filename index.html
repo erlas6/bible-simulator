@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>성경 공부 시뮬레이터</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f4f4f7;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 1.5rem 1.5rem 0.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      color: #555;
+      max-width: 520px;
+      margin: 0.25rem auto;
+    }
+
+    /* 첫 화면에서만 보이고, 다른 화면에서는 JS가 header-hidden 클래스를 붙여 숨김 */
+    .header-hidden {
+      display: none;
+    }
+
+    main {
+      flex: 1;
+      padding: 1rem 1.5rem 2rem;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    footer {
+      padding: 0.75rem 1.5rem 1.25rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* === 첫 화면: 66권 그리드 === */
+
+    #booksView {
+      width: 100%;
+    }
+
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
+    }
+
+    .book-card {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      transform-origin: center bottom;
+      border: none;
+      background: transparent;
+    }
+
+    .book-card:focus-visible {
+      outline: 2px solid #1e4fd4;
+      outline-offset: 4px;
+    }
+
+    .book-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .book-inner {
+      position: relative;
+      background: #fefefe;
+      border-radius: 10px;
+      padding: 0.6rem;
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.08),
+        0 5px 12px rgba(15, 23, 42, 0.12);
+      border-left: 6px solid #c4b5fd;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .book-cover-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .book-tag {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .book-number {
+      font-size: 0.65rem;
+      color: #888;
+      flex-shrink: 0;
+    }
+
+    .book-image {
+      margin-top: 0.4rem;
+      background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+      border-radius: 8px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .book-image span {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: rgba(31, 41, 55, 0.8);
+    }
+
+    .book-image::after {
+      content: "대표 이미지 자리";
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-size: 0.6rem;
+      color: rgba(55, 65, 81, 0.65);
+      background: rgba(249, 250, 251, 0.7);
+      padding: 1px 4px;
+      border-radius: 999px;
+    }
+
+    .book-image.has-image::after {
+      content: "";
+    }
+
+    .book-title-ko {
+      margin-top: 0.45rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .book-title-en {
+      font-size: 0.7rem;
+      color: #6b7280;
+    }
+
+    .book-meta {
+      margin-top: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+
+    .book-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    /* === 공통 back 버튼 === */
+
+    .back-btn {
+      border: none;
+      background: transparent;
+      color: #4b5563;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      margin-bottom: 0.75rem;
+    }
+
+    .back-btn::before {
+      content: "←";
+      font-size: 0.9rem;
+    }
+
+    .back-btn:hover {
+      color: #111827;
+    }
+
+    /* === 창세기 챕터 선택 화면 === */
+
+    #genesisChaptersView {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    #genesisChaptersView h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    #genesisChaptersView p {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 1rem;
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .chapter-card {
+      width: 100%;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: stretch;
+      padding: 0;
+      overflow: hidden;
+      background: #fefefe;
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.06),
+        0 6px 16px rgba(15, 23, 42, 0.15);
+      text-align: left;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .chapter-card:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.05),
+        0 14px 30px rgba(15, 23, 42, 0.18);
+    }
+
+    .chapter-thumb {
+      width: 38%;
+      min-width: 230px;
+      height: 180px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+    }
+
+    .chapter-thumb::after {
+      content: "";
+    }
+
+    .chapter-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .chapter-info {
+      flex: 1;
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+
+    .chapter-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #9ca3af;
+      font-weight: 600;
+    }
+
+    .chapter-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .chapter-desc {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    @media (max-width: 720px) {
+      .chapter-card {
+        flex-direction: column;
+      }
+      .chapter-thumb {
+        width: 100%;
+        min-width: auto;
+        height: 160px;
+      }
+    }
+
+    /* === 선악과 게임 화면 === */
+
+    #edenGameView {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    #edenGameView h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .eden-subtitle {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 1rem;
+    }
+
+    .eden-layout {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+    }
+
+    .eden-left {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .eden-right {
+      flex: 2;
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 0.8rem 0.9rem;
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03),
+        0 8px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .eden-right h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .bible-scroll {
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 0.3rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #374151;
+    }
+
+    .bible-scroll p + p {
+      margin-top: 0.2rem;
+    }
+
+    .verse-ref {
+      font-weight: 600;
+      color: #111827;
+      margin-top: 0.5rem;
+    }
+
+    .verse-line {
+      padding-left: 0.4rem;
+    }
+
+    .mission-box {
+      background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+      border-radius: 12px;
+      padding: 0.7rem 0.8rem;
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.08),
+        0 8px 18px rgba(15, 23, 42, 0.15);
+    }
+
+    .mission-box h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .mission-box h3::before {
+      content: "🎯";
+      font-size: 1rem;
+    }
+
+    .mission-box ul {
+      list-style: none;
+      font-size: 0.85rem;
+      color: #1f2937;
+    }
+
+    .mission-box li + li {
+      margin-top: 0.15rem;
+    }
+
+    .mission-note {
+      font-size: 0.8rem;
+      color: #4b5563;
+    }
+
+    .game-box {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.08),
+        0 10px 22px rgba(15, 23, 42, 0.18);
+      background: radial-gradient(circle at top left, #bbf7d0, #a5f3fc, #fef9c3);
+    }
+
+    /* 캔버스가 게임 박스 가로 전체를 채우도록 max-width 제거 */
+    #edenCanvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: transparent;
+    }
+
+    .game-overlay-dark {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.75));
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .game-overlay-dark.active {
+      opacity: 1;
+    }
+
+    .dialogue-box {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      background: #fefce8;
+      border-radius: 10px;
+      padding: 0.5rem 0.6rem;
+      color: #43302b;
+      border: 1px solid #facc15;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .dialogue-box.empty {
+      background: transparent;
+      border-color: transparent;
+      min-height: 28px;
+    }
+
+    @media (max-width: 900px) {
+      .eden-layout {
+        flex-direction: column;
+      }
+      .eden-right {
+        width: 100%;
+      }
+      #edenCanvas {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.4rem;
+      }
+
+      .book-inner {
+        height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header id="pageHeader">
+    <h1>Bible Simulator</h1>
+    <p>66권 성경을 책 모양으로 한눈에 보고, 각 권을 클릭해 스토리와 미니게임으로 들어가는 첫 화면입니다.</p>
+    <p>먼저 창세기의 "선악과" 챕터를 게임으로 체험해 볼 수 있습니다.</p>
+  </header>
+
+  <main>
+    <!-- 1. 전체 성경 66권 뷰 -->
+    <section id="booksView">
+      <section class="books-grid" id="booksGrid" aria-label="성경 66권 목록"></section>
+    </section>
+
+    <!-- 2. 창세기 챕터 선택 뷰 -->
+    <section id="genesisChaptersView" class="hidden" aria-label="창세기 챕터 선택">
+      <button class="back-btn" id="backToBooks">전체 성경으로</button>
+      <h2>창세기 · Genesis</h2>
+      <p>창세기의 큰 이야기 흐름을 챕터처럼 나누어, 각 사건을 게임과 말씀으로 체험할 수 있습니다.</p>
+
+      <div class="chapter-list">
+        <!-- CHAPTER 1: 선악과 -->
+        <button class="chapter-card" id="edenChapterBtn" type="button" aria-label="Chapter 1 선악과로 이동">
+          <div class="chapter-thumb">
+            <img src="assets/genesis assets/forbidden fruit/forbidden fruit banner.png"
+                 alt="선악과 챕터 배너 이미지" />
+          </div>
+
+          <div class="chapter-info">
+            <div class="chapter-label">CHAPTER 1</div>
+            <div class="chapter-title">선악과와 타락</div>
+            <div class="chapter-desc">
+              에덴동산에서 뱀의 유혹과 선악과 사건을, 간단한 미니게임과 말씀 묵상으로 체험합니다.
+            </div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. 선악과 게임 뷰 -->
+    <section id="edenGameView" class="hidden" aria-label="창세기 선악과 시뮬레이터">
+      <button class="back-btn" id="backToGenesisChapters">창세기 챕터 목록으로</button>
+      <h2>창세기 CHAPTER 1 · 선악과</h2>
+      <p class="eden-subtitle">
+        방향키(↑ ↓ ← →)로 모세 캐릭터를 움직여, 길을 따라 뱀이 있는 나무까지 이동해 보세요.
+      </p>
+
+      <div class="eden-layout">
+        <!-- 왼쪽: 미션 + 게임 -->
+        <div class="eden-left">
+          <div class="mission-box">
+            <h3>미션</h3>
+            <ul>
+              <li><strong>미션 1.</strong> 길을 따라 뱀이 있는 나무까지 이동해서 말 걸기</li>
+              <li class="mission-note">키보드 방향키(↑ ↓ ← →)로 캐릭터를 이동하세요. 벽은 지나갈 수 없습니다.</li>
+            </ul>
+          </div>
+
+          <div class="game-box">
+            <canvas id="edenCanvas" width="480" height="320"></canvas>
+            <div class="game-overlay-dark" id="edenOverlay"></div>
+          </div>
+
+          <div class="dialogue-box empty" id="dialogueBox"></div>
+        </div>
+
+        <!-- 오른쪽: 말씀 스크롤 -->
+        <aside class="eden-right">
+          <h3>말씀 읽기 (예: 창세기 2–3장)</h3>
+          <div class="bible-scroll">
+            <p></p>
+            <p class="verse-ref">창세기 2:16–17</p>
+            <p class="verse-line">“동산 각종 나무의 열매는 네가 자유롭게 먹을 수 있지만, 선악을 알게 하는 나무의 열매는 먹지 말라.”(선악과는 먹지 말라고 말하셨음)</p>
+
+            <p class="verse-ref">창세기 3:1</p>
+            <p class="verse-line">“뱀은 여호와께서 만드신 들짐승 중에서 가장 간교하였다.”</p>
+
+            <p class="verse-ref">묵상 포인트</p>
+            <p class="verse-line">· 하나님이 먼저 ‘자유롭게 먹어도 되는 것’을 충분히 허락하셨다는 점</p>
+            <p class="verse-line">· 뱀의 유혹이 하나님의 말씀을 살짝 비틀어서 시작되었다는 점</p>
+            <p class="verse-line">· 선악과 사건 이후, 하나님과의 관계·자신에 대한 시선·서로에 대한 시선이 어떻게 변하는지 살펴보기</p>
+
+            <p class="verse-ref">삶에 적용하기</p>
+            <p class="verse-line">· 허락하신 것에 먼저 감사하기</p>
+            <p class="verse-line">· 말씀을 정확히 알기</p>
+            <p class="verse-line">· 선택이 헷갈릴 때, 이 선택이 하나님이 보시기에도 기쁠지 생각해보기</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Bible Simulator
+  </footer>
+
+  <script>
+    // === 66권 데이터 ===
+    const books = [
+      // 구약 39
+      { id: 1,  ko: "창세기",    en: "Genesis",       part: "OT", img: "genesis.png" },
+      { id: 2,  ko: "출애굽기",  en: "Exodus",        part: "OT", img: "exodus.png" },
+      { id: 3,  ko: "레위기",    en: "Leviticus",     part: "OT", img: "leviticus.png" },
+      { id: 4,  ko: "민수기",    en: "Numbers",       part: "OT", img: "numbers.png" },
+      { id: 5,  ko: "신명기",    en: "Deuteronomy",   part: "OT", img: "deuteronomy.png" },
+      { id: 6,  ko: "여호수아",  en: "Joshua",        part: "OT", img: "joshua.png" },
+      { id: 7,  ko: "사사기",    en: "Judges",        part: "OT", img: "judges.png" },
+      { id: 8,  ko: "룻기",      en: "Ruth",          part: "OT", img: "ruth.png" },
+      { id: 9,  ko: "사무엘상",  en: "1 Samuel",      part: "OT", img: "1 samuel.png" },
+      { id: 10, ko: "사무엘하",  en: "2 Samuel",      part: "OT", img: "2 samuel.png" },
+      { id: 11, ko: "열왕기상",  en: "1 Kings",       part: "OT", img: "1 kings.png" },
+      { id: 12, ko: "열왕기하",  en: "2 Kings",       part: "OT", img: "2 kings.png" },
+      { id: 13, ko: "역대상",    en: "1 Chronicles",  part: "OT", img: "1 chronicles.png" },
+      { id: 14, ko: "역대하",    en: "2 Chronicles",  part: "OT", img: "2 chronicles.png" },
+      { id: 15, ko: "에스라",    en: "Ezra",          part: "OT", img: "ezra.png" },
+      { id: 16, ko: "느헤미야",  en: "Nehemiah",      part: "OT", img: "nehemiah.png" },
+      { id: 17, ko: "에스더",    en: "Esther",        part: "OT", img: "esther.png" },
+      { id: 18, ko: "욥기",      en: "Job",           part: "OT", img: "job.png" },
+      { id: 19, ko: "시편",      en: "Psalms",        part: "OT", img: "psalms.png" },
+      { id: 20, ko: "잠언",      en: "Proverbs",      part: "OT", img: "proverbs.png" },
+      { id: 21, ko: "전도서",    en: "Ecclesiastes",  part: "OT", img: "ecclesiastes.png" },
+      { id: 22, ko: "아가",      en: "Song of Songs", part: "OT", img: "song of songs.png" },
+      { id: 23, ko: "이사야",    en: "Isaiah",        part: "OT", img: "isaiah.png" },
+      { id: 24, ko: "예레미야",  en: "Jeremiah",      part: "OT", img: "jeremiah.png" },
+      { id: 25, ko: "예레미야애가", en: "Lamentations", part: "OT", img: "lamentations.png" },
+      { id: 26, ko: "에스겔",    en: "Ezekiel",       part: "OT", img: "ezekiel.png" },
+      { id: 27, ko: "다니엘",    en: "Daniel",        part: "OT", img: "daniel.png" },
+      { id: 28, ko: "호세아",    en: "Hosea",         part: "OT", img: "hosea.png" },
+      { id: 29, ko: "요엘",      en: "Joel",          part: "OT", img: "joel.png" },
+      { id: 30, ko: "아모스",    en: "Amos",          part: "OT", img: "amos.png" },
+      { id: 31, ko: "오바댜",    en: "Obadiah",       part: "OT", img: "obadiah.png" },
+      { id: 32, ko: "요나",      en: "Jonah",         part: "OT", img: "jonah.png" },
+      { id: 33, ko: "미가",      en: "Micah",         part: "OT", img: "micah.png" },
+      { id: 34, ko: "나훔",      en: "Nahum",         part: "OT", img: "nahum.png" },
+      { id: 35, ko: "하박국",    en: "Habakkuk",      part: "OT", img: "habakkuk.png" },
+      { id: 36, ko: "스바냐",    en: "Zephaniah",     part: "OT", img: "zephaniah.png" },
+      { id: 37, ko: "학개",      en: "Haggai",        part: "OT", img: "haggai.png" },
+      { id: 38, ko: "스가랴",    en: "Zechariah",     part: "OT", img: "zechariah.png" },
+      { id: 39, ko: "말라기",    en: "Malachi",       part: "OT", img: "malachi.png" },
+
+      // 신약 27
+      { id: 40, ko: "마태복음",   en: "Matthew",       part: "NT", img: "matthew.png" },
+      { id: 41, ko: "마가복음",   en: "Mark",          part: "NT", img: "mark.png" },
+      { id: 42, ko: "누가복음",   en: "Luke",          part: "NT", img: "luke.png" },
+      { id: 43, ko: "요한복음",   en: "John",          part: "NT", img: "john.png" },
+      { id: 44, ko: "사도행전",   en: "Acts",          part: "NT", img: "acts.png" },
+      { id: 45, ko: "로마서",     en: "Romans",        part: "NT", img: "romans.png" },
+      { id: 46, ko: "고린도전서", en: "1 Corinthians", part: "NT", img: "1 corinthians.png" },
+      { id: 47, ko: "고린도후서", en: "2 Corinthians", part: "NT", img: "2 corinthians.png" },
+      { id: 48, ko: "갈라디아서", en: "Galatians",     part: "NT", img: "galatians.png" },
+      { id: 49, ko: "에베소서",   en: "Ephesians",     part: "NT", img: "ephesians.png" },
+      { id: 50, ko: "빌립보서",   en: "Philippians",   part: "NT", img: "philippians.png" },
+      { id: 51, ko: "골로새서",   en: "Colossians",    part: "NT", img: "colossians.png" },
+      { id: 52, ko: "데살로니가전서", en: "1 Thessalonians", part: "NT", img: "1 thessalonians.png" },
+      { id: 53, ko: "데살로니가후서", en: "2 Thessalonians", part: "NT", img: "2 thessalonians.png" },
+      { id: 54, ko: "디모데전서", en: "1 Timothy",     part: "NT", img: "1 timothy.png" },
+      { id: 55, ko: "디모데후서", en: "2 Timothy",     part: "NT", img: "2 timothy.png" },
+      { id: 56, ko: "디도서",     en: "Titus",         part: "NT", img: "titus.png" },
+      { id: 57, ko: "빌레몬서",   en: "Philemon",      part: "NT", img: "philemon.png" },
+      { id: 58, ko: "히브리서",   en: "Hebrews",       part: "NT", img: "hebrews.png" },
+      { id: 59, ko: "야고보서",   en: "James",         part: "NT", img: "james.png" },
+      { id: 60, ko: "베드로전서", en: "1 Peter",       part: "NT", img: "1 peter.png" },
+      { id: 61, ko: "베드로후서", en: "2 Peter",       part: "NT", img: "2 peter.png" },
+      { id: 62, ko: "요한일서",   en: "1 John",        part: "NT", img: "1 john.png" },
+      { id: 63, ko: "요한이서",   en: "2 John",        part: "NT", img: "2 john.png" },
+      { id: 64, ko: "요한삼서",   en: "3 John",        part: "NT", img: "3 john.png" },
+      { id: 65, ko: "유다서",     en: "Jude",          part: "NT", img: "jude.png" },
+      { id: 66, ko: "요한계시록", en: "Revelation",    part: "NT", img: "revelation.png" }
+    ];
+
+    // DOM
+    const booksGrid = document.getElementById("booksGrid");
+    const booksView = document.getElementById("booksView");
+    const genesisChaptersView = document.getElementById("genesisChaptersView");
+    const edenGameView = document.getElementById("edenGameView");
+    const pageHeader = document.getElementById("pageHeader");
+
+    const backToBooksBtn = document.getElementById("backToBooks");
+    const edenChapterBtn = document.getElementById("edenChapterBtn");
+    const backToGenesisChaptersBtn = document.getElementById("backToGenesisChapters");
+
+    function showView(target) {
+      booksView.classList.add("hidden");
+      genesisChaptersView.classList.add("hidden");
+      edenGameView.classList.add("hidden");
+      target.classList.remove("hidden");
+
+      // 첫 화면(66권 그리드)일 때만 헤더 보이기
+      if (target === booksView) {
+        pageHeader.classList.remove("header-hidden");
+      } else {
+        pageHeader.classList.add("header-hidden");
+      }
+    }
+
+    // 66권 카드 그리기
+    books.forEach((book) => {
+      const card = document.createElement("button");
+      card.className = "book-card";
+      card.type = "button";
+      card.setAttribute("data-id", book.id);
+      card.setAttribute("data-part", book.part);
+      card.setAttribute("aria-label", `${book.ko} (${book.en}) 페이지로 이동`);
+
+      const inner = document.createElement("div");
+      inner.className = "book-inner";
+
+      const topRow = document.createElement("div");
+      topRow.className = "book-cover-top";
+
+      const tag = document.createElement("span");
+      tag.className = "book-tag";
+      tag.textContent = book.part === "OT" ? "구약" : "신약";
+
+      const num = document.createElement("span");
+      num.className = "book-number";
+      num.textContent = `#${book.id}`;
+
+      topRow.appendChild(tag);
+      topRow.appendChild(num);
+
+      const imgBox = document.createElement("div");
+      imgBox.className = "book-image";
+
+      if (book.img) {
+        imgBox.classList.add("has-image");
+        const img = document.createElement("img");
+        img.src = `assets/books/images/${book.img}`;
+        img.alt = `${book.ko} 대표 이미지`;
+        imgBox.appendChild(img);
+      } else {
+        const imgInitial = document.createElement("span");
+        imgInitial.textContent = book.ko[0];
+        imgBox.appendChild(imgInitial);
+      }
+
+      const titleKo = document.createElement("div");
+      titleKo.className = "book-title-ko";
+      titleKo.textContent = book.ko;
+
+      const titleEn = document.createElement("div");
+      titleEn.className = "book-title-en";
+      titleEn.textContent = book.en;
+
+      const meta = document.createElement("div");
+      meta.className = "book-meta";
+
+      const partSpan = document.createElement("span");
+      partSpan.textContent = book.part === "OT" ? "Old Testament" : "New Testament";
+
+      const hintSpan = document.createElement("span");
+      hintSpan.textContent = "클릭하여 상세 보기";
+
+      meta.appendChild(partSpan);
+      meta.appendChild(hintSpan);
+
+      inner.appendChild(topRow);
+      inner.appendChild(imgBox);
+      inner.appendChild(titleKo);
+      inner.appendChild(titleEn);
+      inner.appendChild(meta);
+
+      card.appendChild(inner);
+      booksGrid.appendChild(card);
+    });
+
+    booksGrid.addEventListener("click", (e) => {
+      const card = e.target.closest(".book-card");
+      if (!card) return;
+      const id = Number(card.getAttribute("data-id"));
+      const book = books.find((b) => b.id === id);
+      if (!book) return;
+
+      if (id === 1) {
+        showView(genesisChaptersView);
+      } else {
+        alert(`"${book.ко}" 시뮬레이터 페이지는 준비 중입니다!`);
+      }
+    });
+
+    backToBooksBtn.addEventListener("click", () => {
+      stopEdenGame();
+      showView(booksView);
+    });
+
+    backToGenesisChaptersBtn.addEventListener("click", () => {
+      stopEdenGame();
+      showView(genesisChaptersView);
+    });
+
+    edenChapterBtn.addEventListener("click", () => {
+      showView(edenGameView);
+      startEdenGame();
+    });
+
+    // === 선악과 게임 ===
+    const edenCanvas = document.getElementById("edenCanvas");
+    const edenOverlay = document.getElementById("edenOverlay");
+    const dialogueBox = document.getElementById("dialogueBox");
+    const ctx = edenCanvas.getContext("2d");
+
+    // 모세, 뱀+나무 이미지
+    const playerImg = new Image();
+    playerImg.src = "assets/genesis assets/forbidden fruit/mose.png";
+
+    const snakeImg = new Image();
+    snakeImg.src = "assets/genesis assets/forbidden fruit/snake.png";
+
+    // 뱀+나무 크기 스케일 (레벨에 정의된 값의 2/3)
+    const SNAKE_SCALE = 2 / 3;
+
+    // 공통 바깥 테두리 (캔버스 전체)
+    const baseWalls = [
+      { x: 0,   y: 0,   width: 480, height: 20 },
+      { x: 0,   y: 300, width: 480, height: 20 },
+      { x: 0,   y: 0,   width: 20,  height: 320 },
+      { x: 460, y: 0,   width: 20,  height: 320 }
+    ];
+
+    // 여러 미로 레이아웃 (10개)
+    const edenLevels = [
+      // 1. 기본 미로 (현재 것과 비슷)
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 380, y: 80, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 80,  y: 240, width: 320, height: 20 },
+          { x: 80,  y: 140, width: 20,  height: 100 },
+          { x: 200, y: 80,  width: 20,  height: 160 },
+          { x: 200, y: 80,  width: 180, height: 20 }
+        ])
+      },
+      // 2. 지그재그 통로
+      {
+        player: { x: 60, y: 270 },
+        snakeTree: { x: 400, y: 70, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 60,  y: 220, width: 340, height: 20 },
+          { x: 160, y: 120, width: 20,  height: 200 },
+          { x: 260, y: 80,  width: 20,  height: 240 },
+          { x: 160, y: 120, width: 120, height: 20 },
+          { x: 360, y: 140, width: 20,  height: 140 }
+        ])
+      },
+      // 3. U자 모양
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 380, y: 100, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 80,  y: 220, width: 300, height: 20 },
+          { x: 80,  y: 80,  width: 20,  height: 140 },
+          { x: 360, y: 80,  width: 20,  height: 160 },
+          { x: 140, y: 80,  width: 220, height: 20 }
+        ])
+      },
+      // 4. 가운데 섬 있는 형태
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 400, y: 260, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 120, y: 80,  width: 240, height: 20 },
+          { x: 120, y: 80,  width: 20,  height: 160 },
+          { x: 340, y: 80,  width: 20,  height: 160 },
+          { x: 160, y: 200, width: 180, height: 20 }
+        ])
+      },
+      // 5. S자 통로
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 380, y: 60, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 80,  y: 220, width: 320, height: 20 },
+          { x: 80,  y: 140, width: 20,  height: 80 },
+          { x: 200, y: 140, width: 20,  height: 80 },
+          { x: 200, y: 140, width: 200, height: 20 },
+          { x: 360, y: 60,  width: 20,  height: 100 }
+        ])
+      },
+      // 6. 좌우 나눠진 통로
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 420, y: 180, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 120, y: 60,  width: 20,  height: 260 },
+          { x: 240, y: 60,  width: 20,  height: 260 },
+          { x: 360, y: 60,  width: 20,  height: 260 },
+          { x: 120, y: 200, width: 120, height: 20 },
+          { x: 240, y: 120, width: 120, height: 20 }
+        ])
+      },
+      // 7. ㄱ자 코너 돌기
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 380, y: 220, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 80,  y: 220, width: 260, height: 20 },
+          { x: 80,  y: 120, width: 20,  height: 100 },
+          { x: 260, y: 60,  width: 20,  height: 160 },
+          { x: 260, y: 60,  width: 140, height: 20 },
+          { x: 380, y: 60,  width: 20,  height: 140 }
+        ])
+      },
+      // 8. 가운데 십자형
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 380, y: 60, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 160, y: 80,  width: 160, height: 20 },
+          { x: 160, y: 80,  width: 20,  height: 180 },
+          { x: 300, y: 80,  width: 20,  height: 180 },
+          { x: 160, y: 180, width: 160, height: 20 }
+        ])
+      },
+      // 9. 위쪽 통로 위주
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 420, y: 80, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 80,  y: 200, width: 320, height: 20 },
+          { x: 80,  y: 120, width: 20,  height: 80 },
+          { x: 200, y: 60,  width: 20,  height: 160 },
+          { x: 200, y: 60,  width: 200, height: 20 },
+          { x: 360, y: 80,  width: 20,  height: 120 }
+        ])
+      },
+      // 10. 세로 기둥 여러 개 (난이도↑)
+      {
+        player: { x: 60, y: 260 },
+        snakeTree: { x: 380, y: 240, width: 70, height: 95 },
+        walls: baseWalls.concat([
+          { x: 80,  y: 220, width: 20,  height: 80 },
+          { x: 140, y: 60,  width: 20,  height: 260 },
+          { x: 220, y: 60,  width: 20,  height: 260 },
+          { x: 300, y: 60,  width: 20,  height: 260 },
+          { x: 380, y: 60,  width: 20,  height: 120 },
+          { x: 300, y: 180, width: 100, height: 20 }
+        ])
+      }
+    ];
+
+    // 현재 사용 중인 벽 배열
+    let walls = [];
+
+    const edenState = {
+      player: { x: 0, y: 0, size: 18 },  // 모세 충돌 박스 크기
+      snakeTree: { x: 0, y: 0, width: 60, height: 80 },
+      speed: 2.5,
+      mission1Done: false,
+      running: false,
+      currentLevelIndex: 0
+    };
+
+    // 키 상태 (꾹 누르면 계속 이동)
+    const keys = {
+      ArrowUp: false,
+      ArrowDown: false,
+      ArrowLeft: false,
+      ArrowRight: false
+    };
+
+    // 랜덤 레벨 로드
+    function loadRandomLevel() {
+      const idx = Math.floor(Math.random() * edenLevels.length);
+      edenState.currentLevelIndex = idx;
+      const level = edenLevels[idx];
+
+      console.log('지금 로딩된 미로 번호:', idx + 1);  // <- 이 줄 추가
+
+      edenState.player.x = level.player.x;
+      edenState.player.y = level.player.y;
+
+      edenState.snakeTree.x = level.snakeTree.x;
+      edenState.snakeTree.y = level.snakeTree.y;
+      edenState.snakeTree.width  = level.snakeTree.width  * SNAKE_SCALE;
+      edenState.snakeTree.height = level.snakeTree.height * SNAKE_SCALE;
+
+      walls = level.walls;
+    }
+
+    function resetEdenState() {
+      loadRandomLevel(); // 매번 게임 시작 시 랜덤 미로 선택
+      edenState.mission1Done = false;
+      edenOverlay.classList.remove("active");
+      dialogueBox.classList.add("empty");
+      dialogueBox.textContent = "";
+
+      keys.ArrowUp = keys.ArrowDown = keys.ArrowLeft = keys.ArrowRight = false;
+    }
+
+    function isWallCollision(px, py, size) {
+      const half = size;
+      const left = px - half;
+      const right = px + half;
+      const top = py - half;
+      const bottom = py + half;
+
+      for (const w of walls) {
+        if (
+          right > w.x &&
+          left < w.x + w.width &&
+          bottom > w.y &&
+          top < w.y + w.height
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function isSnakeCollision() {
+      const p = edenState.player;
+      const t = edenState.snakeTree;
+      const centerX = t.x;
+      const centerY = t.y;
+      const dx = p.x - centerX;
+      const dy = p.y - centerY;
+      return Math.sqrt(dx * dx + dy * dy) < 30; // 조금 더 타이트한 범위
+    }
+
+    function drawEdenScene() {
+      const { width, height } = edenCanvas;
+
+      // 배경
+      const gradient = ctx.createLinearGradient(0, 0, 0, height);
+      gradient.addColorStop(0, "#bbf7d0");
+      gradient.addColorStop(0.5, "#fef9c3");
+      gradient.addColorStop(1, "#a5f3fc");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+
+      // 미로 벽
+      ctx.fillStyle = "rgba(15, 23, 42, 0.35)";
+      walls.forEach(w => ctx.fillRect(w.x, w.y, w.width, w.height));
+
+      // 뱀+나무
+      const t = edenState.snakeTree;
+      ctx.drawImage(snakeImg, t.x - t.width / 2, t.y - t.height / 2, t.width, t.height);
+
+      // 모세 (조금 작게 그림)
+      const p = edenState.player;
+      const imgW = 32;
+      const imgH = 40;
+      ctx.drawImage(playerImg, p.x - imgW / 2, p.y - imgH / 2, imgW, imgH);
+    }
+
+    function updateEden() {
+      const p = edenState.player;
+      const speed = edenState.speed;
+
+      let dx = 0;
+      let dy = 0;
+      if (keys.ArrowUp) dy -= speed;
+      if (keys.ArrowDown) dy += speed;
+      if (keys.ArrowLeft) dx -= speed;
+      if (keys.ArrowRight) dx += speed;
+
+      if (dx === 0 && dy === 0) {
+        return;
+      }
+
+      const oldX = p.x;
+      const oldY = p.y;
+
+      p.x += dx;
+      p.y += dy;
+
+      if (isWallCollision(p.x, p.y, p.size)) {
+        p.x = oldX;
+        p.y = oldY;
+      }
+
+      if (!edenState.mission1Done && isSnakeCollision()) {
+        edenState.mission1Done = true;
+        edenOverlay.classList.add("active");
+        dialogueBox.classList.remove("empty");
+        dialogueBox.innerHTML = `
+          <p>
+            <strong>뱀:</strong>
+            “정말로 하나님이 동산 모든 나무의 열매를 먹지 말라고 하셨니?”
+          </p>
+          <p style="font-size:0.8rem; color:#4b5563; margin-top:0.2rem;">
+            유혹 이후 사람의 마음과 시선이 어떻게 변했는지 함께 생각해 보아요.
+          </p>
+        `;
+      }
+    }
+
+    function gameLoop() {
+      if (!edenState.running) return;
+      updateEden();
+      drawEdenScene();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function handleKeydown(e) {
+      if (!edenState.running) return;
+      if (keys.hasOwnProperty(e.key)) {
+        e.preventDefault();
+        keys[e.key] = true;
+      }
+    }
+
+    function handleKeyup(e) {
+      if (!edenState.running) return;
+      if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = false;
+      }
+    }
+
+    function startEdenGame() {
+      resetEdenState();
+      edenState.running = true;
+      window.addEventListener("keydown", handleKeydown);
+      window.addEventListener("keyup", handleKeyup);
+      drawEdenScene();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function stopEdenGame() {
+      edenState.running = false;
+      window.removeEventListener("keydown", handleKeydown);
+      window.removeEventListener("keyup", handleKeyup);
+      edenOverlay.classList.remove("active");
+    }
+  </script>
+
+</body>
+</html>
