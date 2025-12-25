@@ -6,11 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -21,29 +17,16 @@
       min-height: 100vh;
     }
 
-    header {
-      padding: 1.5rem 1.5rem 0.5rem;
-      text-align: center;
-    }
-
+    header { padding: 1.5rem 1.5rem 0.5rem; text-align: center; }
     header h1 {
-      font-size: 1.9rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      margin-bottom: 0.5rem;
+      font-size: 1.9rem; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 0.5rem;
     }
-
     header p {
-      font-size: 0.95rem;
-      color: #555;
-      max-width: 520px;
-      margin: 0.25rem auto;
+      font-size: 0.95rem; color: #555; max-width: 520px; margin: 0.25rem auto;
     }
 
     /* 첫 화면에서만 보이고, 다른 화면에서는 JS가 header-hidden 클래스를 붙여 숨김 */
-    .header-hidden {
-      display: none;
-    }
+    .header-hidden { display: none; }
 
     main {
       flex: 1;
@@ -60,15 +43,10 @@
       color: #9ca3af;
     }
 
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
 
     /* === 첫 화면: 66권 그리드 === */
-
-    #booksView {
-      width: 100%;
-    }
+    #booksView { width: 100%; }
 
     .books-grid {
       display: grid;
@@ -85,14 +63,8 @@
       background: transparent;
     }
 
-    .book-card:focus-visible {
-      outline: 2px solid #1e4fd4;
-      outline-offset: 4px;
-    }
-
-    .book-card:hover {
-      transform: translateY(-4px);
-    }
+    .book-card:focus-visible { outline: 2px solid #1e4fd4; outline-offset: 4px; }
+    .book-card:hover { transform: translateY(-4px); }
 
     .book-inner {
       position: relative;
@@ -129,11 +101,7 @@
       flex-shrink: 0;
     }
 
-    .book-number {
-      font-size: 0.65rem;
-      color: #888;
-      flex-shrink: 0;
-    }
+    .book-number { font-size: 0.65rem; color: #888; flex-shrink: 0; }
 
     .book-image {
       margin-top: 0.4rem;
@@ -147,12 +115,7 @@
       overflow: hidden;
     }
 
-    .book-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .book-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     .book-image span {
       font-size: 1.7rem;
@@ -172,9 +135,7 @@
       border-radius: 999px;
     }
 
-    .book-image.has-image::after {
-      content: "";
-    }
+    .book-image.has-image::after { content: ""; }
 
     .book-title-ko {
       margin-top: 0.45rem;
@@ -183,10 +144,7 @@
       color: #111827;
     }
 
-    .book-title-en {
-      font-size: 0.7rem;
-      color: #6b7280;
-    }
+    .book-title-en { font-size: 0.7rem; color: #6b7280; }
 
     .book-meta {
       margin-top: 0.4rem;
@@ -197,14 +155,9 @@
       color: #9ca3af;
     }
 
-    .book-meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.2rem;
-    }
+    .book-meta span { display: inline-flex; align-items: center; gap: 0.2rem; }
 
     /* === 공통 back 버튼 === */
-
     .back-btn {
       border: none;
       background: transparent;
@@ -217,21 +170,11 @@
       margin-bottom: 0.75rem;
     }
 
-    .back-btn::before {
-      content: "←";
-      font-size: 0.9rem;
-    }
-
-    .back-btn:hover {
-      color: #111827;
-    }
+    .back-btn::before { content: "←"; font-size: 0.9rem; }
+    .back-btn:hover { color: #111827; }
 
     /* === 창세기 챕터 선택 화면 === */
-
-    #genesisChaptersView {
-      max-width: 960px;
-      margin: 0 auto;
-    }
+    #genesisChaptersView { max-width: 960px; margin: 0 auto; }
 
     #genesisChaptersView h2 {
       font-size: 1.5rem;
@@ -245,11 +188,7 @@
       margin-bottom: 1rem;
     }
 
-    .chapter-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
+    .chapter-list { display: flex; flex-direction: column; gap: 0.8rem; }
 
     .chapter-card {
       width: 100%;
@@ -286,16 +225,9 @@
       background: none;
     }
 
-    .chapter-thumb::after {
-      content: "";
-    }
+    .chapter-thumb::after { content: ""; }
 
-    .chapter-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .chapter-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     .chapter-info {
       flex: 1;
@@ -314,34 +246,16 @@
       font-weight: 600;
     }
 
-    .chapter-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    .chapter-desc {
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
+    .chapter-title { font-size: 1.15rem; font-weight: 700; color: #111827; }
+    .chapter-desc { font-size: 0.9rem; color: #4b5563; }
 
     @media (max-width: 720px) {
-      .chapter-card {
-        flex-direction: column;
-      }
-      .chapter-thumb {
-        width: 100%;
-        min-width: auto;
-        height: 160px;
-      }
+      .chapter-card { flex-direction: column; }
+      .chapter-thumb { width: 100%; min-width: auto; height: 160px; }
     }
 
     /* === 선악과 게임 화면 === */
-
-    #edenGameView {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+    #edenGameView { max-width: 1100px; margin: 0 auto; }
 
     #edenGameView h2 {
       font-size: 1.5rem;
@@ -393,9 +307,7 @@
       color: #374151;
     }
 
-    .bible-scroll p + p {
-      margin-top: 0.2rem;
-    }
+    .bible-scroll p + p { margin-top: 0.2rem; }
 
     .verse-ref {
       font-weight: 600;
@@ -403,9 +315,7 @@
       margin-top: 0.5rem;
     }
 
-    .verse-line {
-      padding-left: 0.4rem;
-    }
+    .verse-line { padding-left: 0.4rem; }
 
     .mission-box {
       background: linear-gradient(135deg, #eef2ff, #e0f2fe);
@@ -425,25 +335,11 @@
       gap: 0.3rem;
     }
 
-    .mission-box h3::before {
-      content: "🎯";
-      font-size: 1rem;
-    }
+    .mission-box h3::before { content: "🎯"; font-size: 1rem; }
 
-    .mission-box ul {
-      list-style: none;
-      font-size: 0.85rem;
-      color: #1f2937;
-    }
-
-    .mission-box li + li {
-      margin-top: 0.15rem;
-    }
-
-    .mission-note {
-      font-size: 0.8rem;
-      color: #4b5563;
-    }
+    .mission-box ul { list-style: none; font-size: 0.85rem; color: #1f2937; }
+    .mission-box li + li { margin-top: 0.15rem; }
+    .mission-note { font-size: 0.8rem; color: #4b5563; }
 
     .game-box {
       position: relative;
@@ -472,9 +368,7 @@
       transition: opacity 0.4s ease;
     }
 
-    .game-overlay-dark.active {
-      opacity: 1;
-    }
+    .game-overlay-dark.active { opacity: 1; }
 
     .dialogue-box {
       margin-top: 0.4rem;
@@ -496,28 +390,18 @@
     }
 
     @media (max-width: 900px) {
-      .eden-layout {
-        flex-direction: column;
-      }
-      .eden-right {
-        width: 100%;
-      }
-      #edenCanvas {
-        width: 100%;
-      }
+      .eden-layout { flex-direction: column; }
+      .eden-right { width: 100%; }
+      #edenCanvas { width: 100%; }
     }
 
     @media (max-width: 600px) {
-      header h1 {
-        font-size: 1.4rem;
-      }
-
-      .book-inner {
-        height: 160px;
-      }
+      header h1 { font-size: 1.4rem; }
+      .book-inner { height: 160px; }
     }
   </style>
 </head>
+
 <body>
   <header id="pageHeader">
     <h1>Bible Simulator</h1>
@@ -541,7 +425,8 @@
         <!-- CHAPTER 1: 선악과 -->
         <button class="chapter-card" id="edenChapterBtn" type="button" aria-label="Chapter 1 선악과로 이동">
           <div class="chapter-thumb">
-            <img src="assets/genesis assets/forbidden fruit/forbidden fruit banner.png"
+            <!-- ✅ 현재 폴더 구조: /genesis assets/... 이므로 assets/ 를 빼야 함 -->
+            <img src="genesis assets/forbidden fruit/forbidden fruit banner.png"
                  alt="선악과 챕터 배너 이미지" />
           </div>
 
@@ -561,7 +446,7 @@
       <button class="back-btn" id="backToGenesisChapters">창세기 챕터 목록으로</button>
       <h2>창세기 CHAPTER 1 · 선악과</h2>
       <p class="eden-subtitle">
-        방향키(↑ ↓ ← →)로 모세 캐릭터를 움직여, 길을 따라 뱀이 있는 나무까지 이동해 보세요.
+        방향키(↑ ↓ ← →)로 캐릭터를 움직여, 길을 따라 뱀이 있는 나무까지 이동해 보세요.
       </p>
 
       <div class="eden-layout">
@@ -588,8 +473,9 @@
           <h3>말씀 읽기 (예: 창세기 2–3장)</h3>
           <div class="bible-scroll">
             <p></p>
+
             <p class="verse-ref">창세기 2:16–17</p>
-            <p class="verse-line">“동산 각종 나무의 열매는 네가 자유롭게 먹을 수 있지만, 선악을 알게 하는 나무의 열매는 먹지 말라.”(선악과는 먹지 말라고 말하셨음)</p>
+            <p class="verse-line">“동산 각종 나무의 열매는 네가 자유롭게 먹을 수 있지만, 선악을 알게 하는 나무의 열매는 먹지 말라.”</p>
 
             <p class="verse-ref">창세기 3:1</p>
             <p class="verse-line">“뱀은 여호와께서 만드신 들짐승 중에서 가장 간교하였다.”</p>
@@ -597,26 +483,35 @@
             <p class="verse-ref">묵상 포인트</p>
             <p class="verse-line">· 하나님이 먼저 ‘자유롭게 먹어도 되는 것’을 충분히 허락하셨다는 점</p>
             <p class="verse-line">· 뱀의 유혹이 하나님의 말씀을 살짝 비틀어서 시작되었다는 점</p>
-            <p class="verse-line">· 선악과 사건 이후, 하나님과의 관계·자신에 대한 시선·서로에 대한 시선이 어떻게 변하는지 살펴보기</p>
+            <p class="verse-line">· 사건 이후 관계와 시선이 어떻게 변하는지 살펴보기</p>
 
             <p class="verse-ref">삶에 적용하기</p>
             <p class="verse-line">· 허락하신 것에 먼저 감사하기</p>
             <p class="verse-line">· 말씀을 정확히 알기</p>
-            <p class="verse-line">· 선택이 헷갈릴 때, 이 선택이 하나님이 보시기에도 기쁠지 생각해보기</p>
+            <p class="verse-line">· 선택이 헷갈릴 때, 하나님이 기뻐하실지 점검하기</p>
           </div>
         </aside>
       </div>
     </section>
   </main>
 
-  <footer>
-    Bible Simulator
-  </footer>
+  <footer>Bible Simulator</footer>
 
   <script>
+    // =========================
+    // ✅ 경로 설정 (중요)
+    // =========================
+    // 현재 폴더 구조:
+    // - /assets/books/...  (책 표지)
+    // - /genesis assets/... (창세기 리소스)
+    //
+    // booksBase는 네 구조에 맞춰 유지했고,
+    // genesisBase는 assets/가 아니라 루트 폴더 기준으로 잡음.
+    const booksBase = "assets/books/";
+    const genesisBase = "genesis assets/forbidden fruit/";
+
     // === 66권 데이터 ===
     const books = [
-      // 구약 39
       { id: 1,  ko: "창세기",    en: "Genesis",       part: "OT", img: "genesis.png" },
       { id: 2,  ko: "출애굽기",  en: "Exodus",        part: "OT", img: "exodus.png" },
       { id: 3,  ko: "레위기",    en: "Leviticus",     part: "OT", img: "leviticus.png" },
@@ -657,7 +552,6 @@
       { id: 38, ko: "스가랴",    en: "Zechariah",     part: "OT", img: "zechariah.png" },
       { id: 39, ko: "말라기",    en: "Malachi",       part: "OT", img: "malachi.png" },
 
-      // 신약 27
       { id: 40, ko: "마태복음",   en: "Matthew",       part: "NT", img: "matthew.png" },
       { id: 41, ko: "마가복음",   en: "Mark",          part: "NT", img: "mark.png" },
       { id: 42, ko: "누가복음",   en: "Luke",          part: "NT", img: "luke.png" },
@@ -705,11 +599,8 @@
       target.classList.remove("hidden");
 
       // 첫 화면(66권 그리드)일 때만 헤더 보이기
-      if (target === booksView) {
-        pageHeader.classList.remove("header-hidden");
-      } else {
-        pageHeader.classList.add("header-hidden");
-      }
+      if (target === booksView) pageHeader.classList.remove("header-hidden");
+      else pageHeader.classList.add("header-hidden");
     }
 
     // 66권 카드 그리기
@@ -744,8 +635,10 @@
       if (book.img) {
         imgBox.classList.add("has-image");
         const img = document.createElement("img");
-        img.src = `assets/books/images/${book.img}`;
+        img.src = `${booksBase}${book.img}`; // ✅ 경로 변수 사용
         img.alt = `${book.ko} 대표 이미지`;
+        // 깨졌을 때 콘솔에서 바로 확인 가능하게
+        img.onerror = () => console.warn("표지 이미지 로딩 실패:", img.src);
         imgBox.appendChild(img);
       } else {
         const imgInitial = document.createElement("span");
@@ -786,6 +679,7 @@
     booksGrid.addEventListener("click", (e) => {
       const card = e.target.closest(".book-card");
       if (!card) return;
+
       const id = Number(card.getAttribute("data-id"));
       const book = books.find((b) => b.id === id);
       if (!book) return;
@@ -793,7 +687,8 @@
       if (id === 1) {
         showView(genesisChaptersView);
       } else {
-        alert(`"${book.ко}" 시뮬레이터 페이지는 준비 중입니다!`);
+        // ✅ 오타 버그 수정: book.ко -> book.ko
+        alert(`"${book.ko}" 시뮬레이터 페이지는 준비 중입니다!`);
       }
     });
 
@@ -812,18 +707,23 @@
       startEdenGame();
     });
 
+    // =========================
     // === 선악과 게임 ===
+    // =========================
     const edenCanvas = document.getElementById("edenCanvas");
     const edenOverlay = document.getElementById("edenOverlay");
     const dialogueBox = document.getElementById("dialogueBox");
     const ctx = edenCanvas.getContext("2d");
 
-    // 모세, 뱀+나무 이미지
+    // ✅ 이미지 로드(경로 수정!)
     const playerImg = new Image();
-    playerImg.src = "assets/genesis assets/forbidden fruit/mose.png";
+    playerImg.src = `${genesisBase}adam.png`; // ✅
 
     const snakeImg = new Image();
-    snakeImg.src = "assets/genesis assets/forbidden fruit/snake.png";
+    snakeImg.src = `${genesisBase}snake.png`; // ✅
+
+    playerImg.onerror = () => console.warn("playerImg 로딩 실패:", playerImg.src);
+    snakeImg.onerror  = () => console.warn("snakeImg 로딩 실패:", snakeImg.src);
 
     // 뱀+나무 크기 스케일 (레벨에 정의된 값의 2/3)
     const SNAKE_SCALE = 2 / 3;
@@ -838,7 +738,6 @@
 
     // 여러 미로 레이아웃 (10개)
     const edenLevels = [
-      // 1. 기본 미로 (현재 것과 비슷)
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 380, y: 80, width: 70, height: 95 },
@@ -849,7 +748,6 @@
           { x: 200, y: 80,  width: 180, height: 20 }
         ])
       },
-      // 2. 지그재그 통로
       {
         player: { x: 60, y: 270 },
         snakeTree: { x: 400, y: 70, width: 70, height: 95 },
@@ -861,7 +759,6 @@
           { x: 360, y: 140, width: 20,  height: 140 }
         ])
       },
-      // 3. U자 모양
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 380, y: 100, width: 70, height: 95 },
@@ -872,7 +769,6 @@
           { x: 140, y: 80,  width: 220, height: 20 }
         ])
       },
-      // 4. 가운데 섬 있는 형태
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 400, y: 260, width: 70, height: 95 },
@@ -883,7 +779,6 @@
           { x: 160, y: 200, width: 180, height: 20 }
         ])
       },
-      // 5. S자 통로
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 380, y: 60, width: 70, height: 95 },
@@ -895,7 +790,6 @@
           { x: 360, y: 60,  width: 20,  height: 100 }
         ])
       },
-      // 6. 좌우 나눠진 통로
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 420, y: 180, width: 70, height: 95 },
@@ -907,7 +801,6 @@
           { x: 240, y: 120, width: 120, height: 20 }
         ])
       },
-      // 7. ㄱ자 코너 돌기
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 380, y: 220, width: 70, height: 95 },
@@ -919,7 +812,6 @@
           { x: 380, y: 60,  width: 20,  height: 140 }
         ])
       },
-      // 8. 가운데 십자형
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 380, y: 60, width: 70, height: 95 },
@@ -930,7 +822,6 @@
           { x: 160, y: 180, width: 160, height: 20 }
         ])
       },
-      // 9. 위쪽 통로 위주
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 420, y: 80, width: 70, height: 95 },
@@ -942,7 +833,6 @@
           { x: 360, y: 80,  width: 20,  height: 120 }
         ])
       },
-      // 10. 세로 기둥 여러 개 (난이도↑)
       {
         player: { x: 60, y: 260 },
         snakeTree: { x: 380, y: 240, width: 70, height: 95 },
@@ -961,7 +851,7 @@
     let walls = [];
 
     const edenState = {
-      player: { x: 0, y: 0, size: 18 },  // 모세 충돌 박스 크기
+      player: { x: 0, y: 0, size: 18 },  // 충돌 박스 반경(대충)
       snakeTree: { x: 0, y: 0, width: 60, height: 80 },
       speed: 2.5,
       mission1Done: false,
@@ -970,12 +860,7 @@
     };
 
     // 키 상태 (꾹 누르면 계속 이동)
-    const keys = {
-      ArrowUp: false,
-      ArrowDown: false,
-      ArrowLeft: false,
-      ArrowRight: false
-    };
+    const keys = { ArrowUp:false, ArrowDown:false, ArrowLeft:false, ArrowRight:false };
 
     // 랜덤 레벨 로드
     function loadRandomLevel() {
@@ -983,7 +868,7 @@
       edenState.currentLevelIndex = idx;
       const level = edenLevels[idx];
 
-      console.log('지금 로딩된 미로 번호:', idx + 1);  // <- 이 줄 추가
+      console.log("지금 로딩된 미로 번호:", idx + 1);
 
       edenState.player.x = level.player.x;
       edenState.player.y = level.player.y;
@@ -997,12 +882,11 @@
     }
 
     function resetEdenState() {
-      loadRandomLevel(); // 매번 게임 시작 시 랜덤 미로 선택
+      loadRandomLevel();
       edenState.mission1Done = false;
       edenOverlay.classList.remove("active");
       dialogueBox.classList.add("empty");
       dialogueBox.textContent = "";
-
       keys.ArrowUp = keys.ArrowDown = keys.ArrowLeft = keys.ArrowRight = false;
     }
 
@@ -1014,12 +898,7 @@
       const bottom = py + half;
 
       for (const w of walls) {
-        if (
-          right > w.x &&
-          left < w.x + w.width &&
-          bottom > w.y &&
-          top < w.y + w.height
-        ) {
+        if (right > w.x && left < w.x + w.width && bottom > w.y && top < w.y + w.height) {
           return true;
         }
       }
@@ -1029,11 +908,9 @@
     function isSnakeCollision() {
       const p = edenState.player;
       const t = edenState.snakeTree;
-      const centerX = t.x;
-      const centerY = t.y;
-      const dx = p.x - centerX;
-      const dy = p.y - centerY;
-      return Math.sqrt(dx * dx + dy * dy) < 30; // 조금 더 타이트한 범위
+      const dx = p.x - t.x;
+      const dy = p.y - t.y;
+      return Math.sqrt(dx * dx + dy * dy) < 30;
     }
 
     function drawEdenScene() {
@@ -1047,45 +924,42 @@
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
-      // 미로 벽
+      // 벽
       ctx.fillStyle = "rgba(15, 23, 42, 0.35)";
       walls.forEach(w => ctx.fillRect(w.x, w.y, w.width, w.height));
 
       // 뱀+나무
       const t = edenState.snakeTree;
-      ctx.drawImage(snakeImg, t.x - t.width / 2, t.y - t.height / 2, t.width, t.height);
+      if (snakeImg.complete && snakeImg.naturalWidth > 0) {
+        ctx.drawImage(snakeImg, t.x - t.width / 2, t.y - t.height / 2, t.width, t.height);
+      }
 
-      // 모세 (조금 작게 그림)
+      // 캐릭터
       const p = edenState.player;
       const imgW = 32;
       const imgH = 40;
-      ctx.drawImage(playerImg, p.x - imgW / 2, p.y - imgH / 2, imgW, imgH);
+      if (playerImg.complete && playerImg.naturalWidth > 0) {
+        ctx.drawImage(playerImg, p.x - imgW / 2, p.y - imgH / 2, imgW, imgH);
+      }
     }
 
     function updateEden() {
       const p = edenState.player;
       const speed = edenState.speed;
 
-      let dx = 0;
-      let dy = 0;
+      let dx = 0, dy = 0;
       if (keys.ArrowUp) dy -= speed;
       if (keys.ArrowDown) dy += speed;
       if (keys.ArrowLeft) dx -= speed;
       if (keys.ArrowRight) dx += speed;
 
-      if (dx === 0 && dy === 0) {
-        return;
-      }
+      if (dx === 0 && dy === 0) return;
 
-      const oldX = p.x;
-      const oldY = p.y;
-
-      p.x += dx;
-      p.y += dy;
+      const oldX = p.x, oldY = p.y;
+      p.x += dx; p.y += dy;
 
       if (isWallCollision(p.x, p.y, p.size)) {
-        p.x = oldX;
-        p.y = oldY;
+        p.x = oldX; p.y = oldY;
       }
 
       if (!edenState.mission1Done && isSnakeCollision()) {
@@ -1093,13 +967,12 @@
         edenOverlay.classList.add("active");
         dialogueBox.classList.remove("empty");
         dialogueBox.innerHTML = `
-          <p>
-            <strong>뱀:</strong>
-            “정말로 하나님이 동산 모든 나무의 열매를 먹지 말라고 하셨니?”
-          </p>
-          <p style="font-size:0.8rem; color:#4b5563; margin-top:0.2rem;">
-            유혹 이후 사람의 마음과 시선이 어떻게 변했는지 함께 생각해 보아요.
-          </p>
+          <div>
+            <p><strong>뱀:</strong> “정말로 하나님이 동산 모든 나무의 열매를 먹지 말라고 하셨니?”</p>
+            <p style="font-size:0.8rem; color:#4b5563; margin-top:0.2rem;">
+              유혹 이후 사람의 마음과 시선이 어떻게 변했는지 함께 생각해 보아요.
+            </p>
+          </div>
         `;
       }
     }
@@ -1113,7 +986,7 @@
 
     function handleKeydown(e) {
       if (!edenState.running) return;
-      if (keys.hasOwnProperty(e.key)) {
+      if (Object.prototype.hasOwnProperty.call(keys, e.key)) {
         e.preventDefault();
         keys[e.key] = true;
       }
@@ -1121,7 +994,7 @@
 
     function handleKeyup(e) {
       if (!edenState.running) return;
-      if (keys.hasOwnProperty(e.key)) {
+      if (Object.prototype.hasOwnProperty.call(keys, e.key)) {
         keys[e.key] = false;
       }
     }
@@ -1141,7 +1014,9 @@
       window.removeEventListener("keyup", handleKeyup);
       edenOverlay.classList.remove("active");
     }
-  </script>
 
+    // 초기 화면
+    showView(booksView);
+  </script>
 </body>
 </html>
